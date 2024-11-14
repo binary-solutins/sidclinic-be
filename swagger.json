@@ -1,0 +1,362 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Documentation",
+    "version": "1.0.0",
+    "description": "API for user authentication and connections"
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "format": "password" }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User registered successfully" },
+          "400": { "description": "User already exists or validation error" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Log in a user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string", "format": "password" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successful login, returns JWT token" },
+          "401": { "description": "Invalid email or password" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/connections": {
+      "post": {
+        "summary": "Create a new connection",
+        "tags": ["Connections"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" },
+                  "connected_user_id": { "type": "number" }
+                },
+                "required": ["user_id", "connected_user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Connection request sent" },
+          "400": { "description": "User ID and connected user ID are required" },
+          "500": { "description": "Error creating connection" }
+        }
+      }
+    },
+    "/connections/pending": {
+      "get": {
+        "summary": "Get pending connections",
+        "tags": ["Connections"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Successfully retrieved pending connections" },
+          "400": { "description": "User ID is required" },
+          "500": { "description": "Error retrieving connections" }
+        }
+      }
+    },
+    "/connections/accept": {
+      "put": {
+        "summary": "Accept a connection request",
+        "tags": ["Connections"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" },
+                  "connected_user_id": { "type": "number" }
+                },
+                "required": ["user_id", "connected_user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Connection request accepted" },
+          "400": { "description": "User ID and connected user ID are required" },
+          "404": { "description": "No pending connection request found" },
+          "500": { "description": "Error accepting connection" }
+        }
+      }
+    },
+    "/connections/reject": {
+      "put": {
+        "summary": "Reject a connection request",
+        "tags": ["Connections"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" },
+                  "connected_user_id": { "type": "number" }
+                },
+                "required": ["user_id", "connected_user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Connection request rejected" },
+          "400": { "description": "User ID and connected user ID are required" },
+          "404": { "description": "No pending connection request found" },
+          "500": { "description": "Error rejecting connection" }
+        }
+      }
+    },
+    "/connections/remove": {
+      "delete": {
+        "summary": "Remove a connection",
+        "tags": ["Connections"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "connection_id": { "type": "number" }
+                },
+                "required": ["connection_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Connection removed successfully" },
+          "400": { "description": "User ID and connected user ID are required" },
+          "404": { "description": "No pending connection request found" },
+          "500": { "description": "Error in removing connection" }
+        }
+      }
+    },
+    "/posts": {
+      "post": {
+        "summary": "Create A Post",
+        "tags": ["Posts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" },
+                  "content": { "type": "string" }
+                },
+                "required": ["user_id", "content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Post created successfully" },
+          "400": { "description": "User ID and content are required" },
+          "500": { "description": "Error creating post" }
+        }
+      },
+      "get": {
+        "summary": "Get all posts",
+        "tags": ["Posts"],
+        "responses": {
+          "200": { "description": "Successfully retrieved posts" },
+          "500": { "description": "Error fetching posts" }
+        }
+      }
+    },
+    "/posts/remove": {
+      "put": {
+        "summary": "Update a post",
+        "tags": ["Posts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "post_id": { "type": "number" },
+                  "content": { "type": "string" }
+                },
+                "required": ["post_id", "content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Post updated successfully" },
+          "404": { "description": "Post not found" },
+          "500": { "description": "Error updating post" }
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "delete": {
+        "summary": "Delete a post",
+        "tags": ["Posts"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Post deleted successfully" },
+          "404": { "description": "Post not found" },
+          "500": { "description": "Error deleting post" }
+        }
+      }
+    },
+    "/likes/{post_id}": {
+      "post": {
+        "summary": "Like a post",
+        "tags": ["Likes"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" }
+                },
+                "required": ["user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Post liked successfully" },
+          "400": { "description": "You have already liked this post" },
+          "500": { "description": "Error liking post" }
+        }
+      }
+    },
+    "/likes/unlike/{post_id}": {
+      "post": {
+        "summary": "Unlike a post",
+        "tags": ["Likes"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "number" }
+                },
+                "required": ["user_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Post unliked successfully" },
+          "400": { "description": "You have already unliked this post" },
+          "500": { "description": "Error unliking post" }
+        }
+      }
+    },
+    "/likes/getalllikes/{post_id}": {
+      "get": {
+        "summary": "Get all likes of a post",
+        "tags": ["Likes"],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Likes retrieved successfully" },
+          "404": { "description": "Post not found" },
+          "500": { "description": "Error retrieving likes" }
+        }
+      }
+    }
+  }
+}
